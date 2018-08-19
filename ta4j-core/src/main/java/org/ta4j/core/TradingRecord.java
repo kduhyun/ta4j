@@ -64,6 +64,8 @@ public interface TradingRecord extends Serializable {
      * @param amount the amount to be ordered
      */
     void operate(int index, Num price, Num amount);
+
+    void operate(int index, Num price, Num amount, List<String> satisfiedRuleList);
     
     /**
      * Operates an entry order in the trading record.

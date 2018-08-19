@@ -27,6 +27,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.ta4j.core.Rule;
 
+import java.util.List;
+
 /**
  * An abstract trading {@link Rule rule}.
  */
@@ -38,6 +40,9 @@ public abstract class AbstractRule implements Rule {
     /** The class name */
     protected final String className = getClass().getSimpleName();
 
+    protected String description;
+
+    protected List<String> satisfiedRuleList;
     /**
      * Traces the isSatisfied() method calls.
      * @param index the bar index
@@ -45,5 +50,24 @@ public abstract class AbstractRule implements Rule {
      */
     protected void traceIsSatisfied(int index, boolean isSatisfied) {
         log.trace("{}#isSatisfied({}): {}", className, index, isSatisfied);
+    }
+
+
+    @Override
+    public String getDescription() {
+        if(description == null) {
+            return this.className;
+        }
+        return description;
+    }
+
+    @Override
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    @Override
+    public List<String> getSatisfiedRuleList() {
+        return satisfiedRuleList;
     }
 }

@@ -104,22 +104,27 @@ public class BaseTradingRecord implements TradingRecord {
     public Trade getCurrentTrade() {
         return currentTrade;
     }
-    
+
     @Override
     public void operate(int index, Num price, Num amount) {
+        operate(index, price, amount, null);
+    }
+
+    @Override
+    public void operate(int index, Num price, Num amount, List<String> satisfiedRuleList) {
         if (currentTrade.isClosed()) {
             // Current trade closed, should not occur
             throw new IllegalStateException("Current trade should not be closed");
         }
         boolean newOrderWillBeAnEntry = currentTrade.isNew();
-        Order newOrder = currentTrade.operate(index, price, amount);
+        Order newOrder = currentTrade.operate(index, price, amount, satisfiedRuleList);
         recordOrder(newOrder, newOrderWillBeAnEntry);
     }
-    
+
     @Override
     public boolean enter(int index, Num price, Num amount) {
         if (currentTrade.isNew()) {
-            operate(index, price, amount);
+            operate(index, price, amount, null);
             return true;
         }
         return false;
@@ -128,7 +133,7 @@ public class BaseTradingRecord implements TradingRecord {
     @Override
     public boolean exit(int index, Num price, Num amount) {
         if (currentTrade.isOpened()) {
-            operate(index, price, amount);
+            operate(index, price, amount, null);
             return true;
         }
         return false;

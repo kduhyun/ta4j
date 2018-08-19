@@ -49,7 +49,11 @@ public class IsRisingRule extends AbstractRule {
 	 * @param barCount the time frame
 	 */
 	public IsRisingRule(Indicator<Num> ref, int barCount) {
-		this(ref, barCount, 1);
+		this(ref, barCount, 1, null);
+	}
+
+	public IsRisingRule(Indicator<Num> ref, int barCount, String description) {
+		this(ref, barCount, 1, description);
 	}
 	
 	/**
@@ -59,10 +63,11 @@ public class IsRisingRule extends AbstractRule {
 	 * @param barCount the time frame
 	 * @param minStrenght the minimum required rising strenght (between '0' and '1', e.g. '1' for strict rising)
 	 */
-	public IsRisingRule(Indicator<Num> ref, int barCount, double minStrenght) {
+	public IsRisingRule(Indicator<Num> ref, int barCount, double minStrenght, String description) {
 		this.ref = ref;
 		this.barCount = barCount;
 		this.minStrenght = minStrenght;
+		this.description = description;
 	}
 
 	@Override

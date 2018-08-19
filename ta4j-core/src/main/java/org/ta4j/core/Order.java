@@ -26,6 +26,7 @@ package org.ta4j.core;
 import org.ta4j.core.num.Num;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -82,7 +83,8 @@ public class Order implements Serializable {
     
     /** The amount to be (or that was) ordered */
     private Num amount;
-    
+
+    private List<String> satisfiedRules;
     /**
      * Constructor.
      * @param index the index the order is executed
@@ -94,6 +96,7 @@ public class Order implements Serializable {
         this.index = index;
         this.amount = series.numOf(1);
         this.price = series.getBar(index).getClosePrice();
+        this.satisfiedRules = null;
     }
 
     /**
@@ -108,7 +111,17 @@ public class Order implements Serializable {
         this.index = index;
         this.price = price;
         this.amount = amount;
+        this.satisfiedRules = null;
     }
+
+    protected Order(int index, OrderType type, Num price, Num amount, List<String> satisfiedRules) {
+        this.type = type;
+        this.index = index;
+        this.price = price;
+        this.amount = amount;
+        this.satisfiedRules = satisfiedRules;
+    }
+
 
     /**
      * Constructor.
@@ -122,6 +135,15 @@ public class Order implements Serializable {
         this.index = index;
         this.price = series.getBar(index).getClosePrice();
         this.amount = amount;
+        this.satisfiedRules = null;
+    }
+
+    protected Order(int index, TimeSeries series, OrderType type, Num amount, List<String> satisfiedRules) {
+        this.type = type;
+        this.index = index;
+        this.price = series.getBar(index).getClosePrice();
+        this.amount = amount;
+        this.satisfiedRules = satisfiedRules;
     }
 
     /**
@@ -164,6 +186,10 @@ public class Order implements Serializable {
      */
     public Num getAmount() {
         return amount;
+    }
+
+    public List<String> getSatisfiedRules() {
+        return satisfiedRules;
     }
 
     @Override

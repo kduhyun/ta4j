@@ -23,17 +23,15 @@
  *******************************************************************************/
 package org.ta4j.core.trading.rules;
 
-import lombok.extern.slf4j.Slf4j;
 import org.ta4j.core.Rule;
 import org.ta4j.core.TradingRecord;
 
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-@Slf4j
 public abstract class AndOrRule extends AbstractRule {
 
     private Rule[] rules;
@@ -47,19 +45,39 @@ public abstract class AndOrRule extends AbstractRule {
 
     @Override
     public boolean isSatisfied(int index, TradingRecord tradingRecord) {
+        Boolean[] ruleSatisfied = new Boolean[rules.length];
         int satisfiedCount = this.satisfiedCount;
 
         boolean satisfied = false;
-        for (int i = 0; i < rules.length && !satisfied; i++) {
-            if(rules[i].isSatisfied(index, tradingRecord)) {
+        for (int i = 0; i < rules.length; i++) {
+            ruleSatisfied[i] = new Boolean(rules[i].isSatisfied(index, tradingRecord));
+            if(ruleSatisfied[i]) {
                 satisfiedCount--;
-                if(satisfiedCount <= 0) {
-                    satisfied = true;
-                }
             }
+        }
+
+        if(satisfiedCount <= 0) {
+
+            satisfiedRuleList = IntStream.range(0, rules.length)
+                    .boxed()
+                    .filter(integer -> ruleSatisfied[integer])
+                    .map(i -> getSatisfiedRuleDescription(rules[i]))
+                    .flatMap(Collection::stream)
+                    .collect(Collectors.toList());
+
+            satisfied = true;
         }
 
         traceIsSatisfied(index, satisfied);
         return satisfied;
+    }
+
+    public List<String> getSatisfiedRuleDescription(Rule rule) {
+        if(!(rule instanceof AndRule) && !(rule instanceof OrRule)) {
+
+            return Collections.singletonList(String.format("[%s]", rule.getDescription()));
+        } else {
+            return rule.getSatisfiedRuleList();
+        }
     }
 }

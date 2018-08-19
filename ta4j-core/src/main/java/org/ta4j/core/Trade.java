@@ -27,6 +27,7 @@ import org.ta4j.core.Order.OrderType;
 import org.ta4j.core.num.Num;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Objects;
 
 import static org.ta4j.core.num.NaN.NaN;
@@ -119,7 +120,7 @@ public class Trade implements Serializable {
      * @return the order
      */
     public Order operate(int index) {
-        return operate(index, NaN, NaN);
+        return operate(index, NaN, NaN, null);
     }
 
     /**
@@ -130,15 +131,19 @@ public class Trade implements Serializable {
      * @return the order
      */
     public Order operate(int index, Num price, Num amount) {
+        return operate(index, price, amount, null);
+    }
+
+    public Order operate(int index, Num price, Num amount, List<String> satisfiedRuleList) {
         Order order = null;
         if (isNew()) {
-            order = new Order(index, startingType, price, amount);
+            order = new Order(index, startingType, price, amount, satisfiedRuleList);
             entry = order;
         } else if (isOpened()) {
             if (index < entry.getIndex()) {
                 throw new IllegalStateException("The index i is less than the entryOrder index");
             }
-            order = new Order(index, startingType.complementType(), price, amount);
+            order = new Order(index, startingType.complementType(), price, amount, satisfiedRuleList);
             exit = order;
         }
         return order;
