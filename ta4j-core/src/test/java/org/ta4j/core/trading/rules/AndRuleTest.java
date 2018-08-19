@@ -59,6 +59,9 @@ public class AndRuleTest {
         assertFalse(new AndRule(unsatisfiedRule, BooleanRule.TRUE, BooleanRule.TRUE).isSatisfied(20));
         assertFalse(new AndRule(BooleanRule.TRUE, unsatisfiedRule, BooleanRule.TRUE).isSatisfied(20));
         assertFalse(new AndRule(BooleanRule.TRUE, BooleanRule.TRUE, unsatisfiedRule).isSatisfied(20));
+
+        assertTrue(satisfiedRule.and(BooleanRule.TRUE, BooleanRule.TRUE).isSatisfied(30));
+        assertFalse(satisfiedRule.and(BooleanRule.TRUE, BooleanRule.FALSE).isSatisfied(30));
     }
 }
         

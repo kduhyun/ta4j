@@ -68,6 +68,9 @@ public class OrRuleTest {
         assertTrue(new OrRule(unsatisfiedRule, BooleanRule.TRUE, BooleanRule.TRUE).isSatisfied(20));
         assertTrue(new OrRule(BooleanRule.TRUE, unsatisfiedRule, BooleanRule.TRUE).isSatisfied(20));
         assertTrue(new OrRule(BooleanRule.TRUE, BooleanRule.TRUE, unsatisfiedRule).isSatisfied(20));
+
+        assertTrue(satisfiedRule.or(BooleanRule.FALSE, BooleanRule.FALSE).isSatisfied(30));
+        assertFalse(unsatisfiedRule.or(BooleanRule.FALSE, BooleanRule.FALSE).isSatisfied(30));
     }
 }
         
