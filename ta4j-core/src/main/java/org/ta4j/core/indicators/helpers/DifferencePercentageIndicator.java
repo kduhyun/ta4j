@@ -21,51 +21,50 @@
  *   IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  *   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package org.ta4j.core.trading.rules;
+package org.ta4j.core.indicators.helpers;
 
-import org.ta4j.core.Bar;
-import org.ta4j.core.Order;
-import org.ta4j.core.TradingRecord;
-
-import static org.ta4j.core.Order.OrderType;
+import org.ta4j.core.Indicator;
+import org.ta4j.core.indicators.CachedIndicator;
+import org.ta4j.core.num.Num;
 
 /**
- * A {@link org.ta4j.core.Rule} which waits for a number of {@link Bar} after an order.
+ * Difference indicator.
  * </p>
- * Satisfied after a fixed number of bars since the last order.
+ * I.e.: first - second
  */
-public class WaitForRule extends AbstractRule {
+public class DifferencePercentageIndicator extends CachedIndicator<Num> {
 
-    /** The type of the order since we have to wait for */
-    private OrderType orderType;
+    private Indicator<Num> first;
 
-    /** The number of bars to wait for */
-    private int numberOfBars;
+    private Indicator<Num> second;
+
+    private boolean showLog = false;
 
     /**
      * Constructor.
-     * @param orderType the type of the order since we have to wait for
-     * @param numberOfBars the number of bars to wait for
+     * (first minus second)
+     * @param first the first indicator
+     * @param second the second indicator
      */
-    public WaitForRule(OrderType orderType, int numberOfBars) {
-        this.orderType = orderType;
-        this.numberOfBars = numberOfBars;
+    public DifferencePercentageIndicator(Indicator<Num> first, Indicator<Num> second) {
+        this(first, second, false);
+    }
+    public DifferencePercentageIndicator(Indicator<Num> first, Indicator<Num> second, boolean showLog) {
+        // TODO: check if first series is equal to second one
+        super(first);
+        this.first = first;
+        this.second = second;
+        this.showLog = showLog;
     }
 
     @Override
-    public boolean isSatisfied(int index, TradingRecord tradingRecord) {
-        boolean satisfied = false;
-        // No trading history, no need to wait. Therefore it has to return true.
-        if (tradingRecord != null) {
-            Order lastOrder = tradingRecord.getLastOrder(orderType);
-            if (lastOrder != null) {
-                int currentNumberOfBars = index - lastOrder.getIndex();
-                satisfied = currentNumberOfBars >= numberOfBars;
-            } else {
-               // satisfied = true;
-            }
+    protected Num calculate(int index) {
+
+        Num num = first.getValue(index).minus(second.getValue(index)).dividedBy(second.getValue(index));
+        if(showLog) {
+            log.info(String.format("%.4f, %.4f", first.getValue(index).floatValue(), second.getValue(index).floatValue()));
+            log.info(String.format("%d: %.4f", index, num.floatValue()));
         }
-        traceIsSatisfied(index, satisfied);
-        return satisfied;
+        return num;
     }
 }

@@ -39,6 +39,7 @@ public class OverIndicatorRule extends AbstractRule {
     private Indicator<Num> first;
     /** The second indicator */
     private Indicator<Num> second;
+    private int barCount;
 
     /**
      * Constructor.
@@ -49,13 +50,25 @@ public class OverIndicatorRule extends AbstractRule {
         this(indicator, indicator.numOf(threshold));
     }
 
+    public OverIndicatorRule(Indicator<Num> indicator, Number threshold, String description) {
+        this(indicator, indicator.numOf(threshold), description, 1);
+    }
+
+    public OverIndicatorRule(Indicator<Num> indicator, Number threshold, String description, int barCount) {
+        this(indicator, indicator.numOf(threshold), description, barCount);
+    }
+
     /**
      * Constructor.
      * @param indicator the indicator
      * @param threshold a threshold
      */
     public OverIndicatorRule(Indicator<Num> indicator, Num threshold) {
-        this(indicator, new ConstantIndicator<Num>(indicator.getTimeSeries(), threshold));
+        this(indicator, new ConstantIndicator<Num>(indicator.getTimeSeries(), threshold), null, 1);
+    }
+
+    public OverIndicatorRule(Indicator<Num> indicator, Num threshold, String description, int barCount) {
+        this(indicator, new ConstantIndicator<Num>(indicator.getTimeSeries(), threshold), description, barCount);
     }
 
     /**
@@ -64,14 +77,27 @@ public class OverIndicatorRule extends AbstractRule {
      * @param second the second indicator
      */
     public OverIndicatorRule(Indicator<Num> first, Indicator<Num> second) {
+        this(first, second, null, 1);
+    }
+
+    public OverIndicatorRule(Indicator<Num> first, Indicator<Num> second, String description) {
+        this(first, second, description, 1);
+    }
+
+    public OverIndicatorRule(Indicator<Num> first, Indicator<Num> second, String description, int barCount) {
         this.first = first;
         this.second = second;
+        this.description = description;
+        this.barCount = barCount;
     }
 
     @Override
     public boolean isSatisfied(int index, TradingRecord tradingRecord) {
-        final boolean satisfied = first.getValue(index).isGreaterThan(second.getValue(index));
-        traceIsSatisfied(index, satisfied);
-        return satisfied;
+        for (int i = Math.max(0, index - barCount + 1); i <= index; i++) {
+            if (first.getValue(i).isGreaterThan(second.getValue(i))) {
+                return true;
+            }
+        }
+        return false;
     }
 }

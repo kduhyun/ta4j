@@ -34,31 +34,33 @@ import java.util.List;
  */
 public class BaseTradingRecord implements TradingRecord {
 
-	private static final long serialVersionUID = -4436851731855891220L;
+    private static final long serialVersionUID = -4436851731855891220L;
 
-	/** The recorded orders */
+    /** The recorded orders */
     private List<Order> orders = new ArrayList<>();
-    
+
     /** The recorded BUY orders */
     private List<Order> buyOrders = new ArrayList<>();
-    
+
     /** The recorded SELL orders */
     private List<Order> sellOrders = new ArrayList<>();
-    
+
     /** The recorded entry orders */
     private List<Order> entryOrders = new ArrayList<>();
-    
+
     /** The recorded exit orders */
     private List<Order> exitOrders = new ArrayList<>();
-    
+
     /** The recorded trades */
     private List<Trade> trades = new ArrayList<>();
 
     /** The entry type (BUY or SELL) in the trading session */
     private Order.OrderType startingType;
-    
+
     /** The current non-closed trade (there's always one) */
     private Trade currentTrade;
+
+    private String code;
 
     /**
      * Constructor.
@@ -66,7 +68,7 @@ public class BaseTradingRecord implements TradingRecord {
     public BaseTradingRecord() {
         this(Order.OrderType.BUY);
     }
-    
+
     /**
      * Constructor.
      * @param entryOrderType the {@link Order.OrderType order type} of entries in the trading session
@@ -99,7 +101,7 @@ public class BaseTradingRecord implements TradingRecord {
             recordOrder(newOrder, newOrderWillBeAnEntry);
         }
     }
-    
+
     @Override
     public Trade getCurrentTrade() {
         return currentTrade;
@@ -129,7 +131,7 @@ public class BaseTradingRecord implements TradingRecord {
         }
         return false;
     }
-    
+
     @Override
     public boolean exit(int index, Num price, Num amount) {
         if (currentTrade.isOpened()) {
@@ -138,12 +140,12 @@ public class BaseTradingRecord implements TradingRecord {
         }
         return false;
     }
-    
+
     @Override
     public List<Trade> getTrades() {
         return trades;
     }
-    
+
     @Override
     public Order getLastOrder() {
         if (!orders.isEmpty()) {
@@ -151,7 +153,7 @@ public class BaseTradingRecord implements TradingRecord {
         }
         return null;
     }
-    
+
     @Override
     public Order getLastOrder(Order.OrderType orderType) {
         if (Order.OrderType.BUY.equals(orderType) && !buyOrders.isEmpty()) {
@@ -161,7 +163,7 @@ public class BaseTradingRecord implements TradingRecord {
         }
         return null;
     }
-    
+
     @Override
     public Order getLastEntry() {
         if (!entryOrders.isEmpty()) {
@@ -169,13 +171,21 @@ public class BaseTradingRecord implements TradingRecord {
         }
         return null;
     }
-    
+
     @Override
     public Order getLastExit() {
         if (!exitOrders.isEmpty()) {
             return exitOrders.get(exitOrders.size() - 1);
         }
         return null;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 
     /**
@@ -187,14 +197,14 @@ public class BaseTradingRecord implements TradingRecord {
         if (order == null) {
             throw new IllegalArgumentException("Order should not be null");
         }
-        
+
         // Storing the new order in entries/exits lists
         if (isEntry) {
             entryOrders.add(order);
         } else {
             exitOrders.add(order);
         }
-        
+
         // Storing the new order in orders list
         orders.add(order);
         if (Order.OrderType.BUY.equals(order.getType())) {

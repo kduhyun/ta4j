@@ -39,6 +39,8 @@ public class UnderIndicatorRule extends AbstractRule {
     private Indicator<Num> first;
     /** The second indicator */
     private Indicator<Num> second;
+    /** The barCount */
+    private int barCount;
 
     /**
      * Constructor.
@@ -46,11 +48,15 @@ public class UnderIndicatorRule extends AbstractRule {
      * @param threshold a threshold
      */
     public UnderIndicatorRule(Indicator<Num> indicator, Number threshold) {
-        this(indicator, new ConstantIndicator<Num>(indicator.getTimeSeries(), indicator.numOf(threshold)), null);
+        this(indicator, new ConstantIndicator<Num>(indicator.getTimeSeries(), indicator.numOf(threshold)), null, 1);
     }
 
     public UnderIndicatorRule(Indicator<Num> indicator, Number threshold, String description) {
-        this(indicator, new ConstantIndicator<Num>(indicator.getTimeSeries(), indicator.numOf(threshold)), description);
+        this(indicator, new ConstantIndicator<Num>(indicator.getTimeSeries(), indicator.numOf(threshold)), description, 1);
+    }
+
+    public UnderIndicatorRule(Indicator<Num> indicator, Number threshold, String description, int barCount) {
+        this(indicator, new ConstantIndicator<Num>(indicator.getTimeSeries(), indicator.numOf(threshold)), description, barCount);
     }
 
     /**
@@ -59,11 +65,11 @@ public class UnderIndicatorRule extends AbstractRule {
      * @param threshold a threshold
      */
     public UnderIndicatorRule(Indicator<Num> indicator, Num threshold) {
-        this(indicator, new ConstantIndicator<Num>(indicator.getTimeSeries(), threshold), null);
+        this(indicator, new ConstantIndicator<Num>(indicator.getTimeSeries(), threshold), null, 1);
     }
 
     public UnderIndicatorRule(Indicator<Num> indicator, Num threshold, String description) {
-        this(indicator, new ConstantIndicator<Num>(indicator.getTimeSeries(), threshold), description);
+        this(indicator, new ConstantIndicator<Num>(indicator.getTimeSeries(), threshold), description, 1);
     }
     
     /**
@@ -72,18 +78,26 @@ public class UnderIndicatorRule extends AbstractRule {
      * @param second the second indicator
      */
     public UnderIndicatorRule(Indicator<Num> first, Indicator<Num> second) {
-        this(first, second, null);
+        this(first, second, null, 1);
     }
     public UnderIndicatorRule(Indicator<Num> first, Indicator<Num> second, String description) {
+        this(first, second, description, 1);
+    }
+    public UnderIndicatorRule(Indicator<Num> first, Indicator<Num> second, String description, int barCount) {
         this.first = first;
         this.second = second;
         this.description = description;
+        this.barCount = barCount;
     }
 
     @Override
     public boolean isSatisfied(int index, TradingRecord tradingRecord) {
-        final boolean satisfied = first.getValue(index).isLessThan(second.getValue(index));
-        traceIsSatisfied(index, satisfied);
-        return satisfied;
+
+        for (int i = Math.max(0, index - barCount + 1); i <= index; i++) {
+            if (first.getValue(i).isLessThan(second.getValue(i))) {
+                return true;
+            }
+        }
+        return false;
     }
 }

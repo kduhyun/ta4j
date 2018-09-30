@@ -43,9 +43,10 @@ import java.util.Objects;
  */
 public class Order implements Serializable {
 
-	private static final long serialVersionUID = -905474949010114150L;
+    private static final long serialVersionUID = -905474949010114150L;
 
-	/**
+    private String date;
+    /**
      * The type of an {@link Order order}.
      * <p>
      * A BUY corresponds to a <i>BID</i> order.<p>
@@ -71,7 +72,7 @@ public class Order implements Serializable {
          */
         public abstract OrderType complementType();
     }
-    
+
     /** Type of the order */
     private OrderType type;
 
@@ -80,7 +81,7 @@ public class Order implements Serializable {
 
     /** The price for the order */
     private Num price;
-    
+
     /** The amount to be (or that was) ordered */
     private Num amount;
 
@@ -181,6 +182,14 @@ public class Order implements Serializable {
         return price;
     }
 
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
     /**
      * @return the amount to be (or that was) ordered
      */
@@ -219,7 +228,7 @@ public class Order implements Serializable {
     public String toString() {
         return "Order{" + "type=" + type + ", index=" + index + ", price=" + price + ", amount=" + amount + '}';
     }
-    
+
     /**
      * @param index the index the order is executed
      * @param series the time series

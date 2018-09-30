@@ -49,7 +49,7 @@ public class IsFallingRule extends AbstractRule {
 	 * @param barCount the time frame
 	 */
 	public IsFallingRule(Indicator<Num> ref, int barCount) {
-		this(ref, barCount, 1.0);
+		this(ref, barCount, 1.0, null);
 	}
 	
 	/**
@@ -60,9 +60,14 @@ public class IsFallingRule extends AbstractRule {
 	 * @param minStrenght the minimum required falling strength (between '0' and '1', e.g. '1' for strict falling)
 	 */
 	public IsFallingRule(Indicator<Num> ref, int barCount, double minStrenght) {
+		this(ref, barCount, minStrenght, null);
+	}
+
+	public IsFallingRule(Indicator<Num> ref, int barCount, double minStrenght, String description) {
 		this.ref = ref;
 		this.barCount = barCount;
 		this.minStrenght = minStrenght;
+		this.description = description;
 	}
 
 	@Override

@@ -48,7 +48,7 @@ public interface TradingRecord extends Serializable {
      * @return the current trade
      */
     Trade getCurrentTrade();
-    
+
     /**
      * Operates an order in the trading record.
      * @param index the index to operate the order
@@ -56,7 +56,7 @@ public interface TradingRecord extends Serializable {
     default void operate(int index) {
         operate(index, NaN, NaN);
     }
-    
+
     /**
      * Operates an order in the trading record.
      * @param index the index to operate the order
@@ -66,7 +66,7 @@ public interface TradingRecord extends Serializable {
     void operate(int index, Num price, Num amount);
 
     void operate(int index, Num price, Num amount, List<String> satisfiedRuleList);
-    
+
     /**
      * Operates an entry order in the trading record.
      * @param index the index to operate the entry
@@ -75,7 +75,7 @@ public interface TradingRecord extends Serializable {
     default boolean enter(int index) {
         return enter(index, NaN, NaN);
     }
-    
+
     /**
      * Operates an entry order in the trading record.
      * @param index the index to operate the entry
@@ -84,7 +84,7 @@ public interface TradingRecord extends Serializable {
      * @return true if the entry has been operated, false otherwise
      */
     boolean enter(int index, Num price, Num amount);
-    
+
     /**
      * Operates an exit order in the trading record.
      * @param index the index to operate the exit
@@ -93,7 +93,7 @@ public interface TradingRecord extends Serializable {
     default boolean exit(int index) {
         return exit(index, NaN, NaN);
     }
-    
+
     /**
      * Operates an exit order in the trading record.
      * @param index the index to operate the exit
@@ -102,55 +102,59 @@ public interface TradingRecord extends Serializable {
      * @return true if the exit has been operated, false otherwise
      */
     boolean exit(int index, Num price, Num amount);
-    
+
     /**
      * @return true if no trade is open, false otherwise
      */
     default boolean isClosed() {
         return !getCurrentTrade().isOpened();
     }
-    
+
     /**
      * @return the recorded trades
      */
     List<Trade> getTrades();
-    
+
     /**
      * @return the number of recorded trades
      */
     default int getTradeCount() {
         return getTrades().size();
     }
-    
+
     /**
      * @return the last trade recorded
      */
     default Trade getLastTrade() {
-    	List<Trade> trades = getTrades();
+        List<Trade> trades = getTrades();
         if (!trades.isEmpty()) {
             return trades.get(trades.size() - 1);
         }
         return null;
     }
-    
+
     /**
      * @return the last order recorded
      */
     Order getLastOrder();
-    
+
     /**
      * @param orderType the type of the order to get the last of
      * @return the last order (of the provided type) recorded
      */
     Order getLastOrder(OrderType orderType);
-    
+
     /**
      * @return the last entry order recorded
      */
     Order getLastEntry();
-    
+
     /**
      * @return the last exit order recorded
      */
     Order getLastExit();
+
+    String getCode();
+
+    void setCode(String code);
 }
